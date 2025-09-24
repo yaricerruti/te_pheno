@@ -1,0 +1,41 @@
+name: yari
+channels:
+  - bioconda
+  - anaconda
+  - conda-forge
+dependencies:
+
+# --- Unix ---
+  - bcftools=1.15=h0ea216a_2
+  - bedtools=2.30.0=h468198e_3
+  - conda=4.12.0=py310hff52083_0
+  - numpy=1.22.3=py310h45f3432_1
+  - perl=5.32.1=2_h7f98852_perl5
+  - python=3.10.4=h9a8a25e_0_cpython
+  - snakemake=7.3.7=hdfd78af_0
+  - snakemake-minimal=7.3.7=pyhdfd78af_0
+  - ucsc-bigbedtobed=377=ha8a8165_3
+  - ucsc-bigwigaverageoverbed=377=ha8a8165_3
+  - ucsc-bigwiginfo=377=ha8a8165_3
+  - ucsc-bigwigsummary=377=ha8a8165_3
+  - ucsc-bigwigtobedgraph=377=ha8a8165_6
+  - ucsc-bigwigtowig=377=ha8a8165_3
+  - ucsc-liftover=447=h954228d_0
+  - vcftools=0.1.16=pl5321hd03093a_7
+  - yaml=0.2.5=h7f98852_2
+  
+# --- R ---
+  - r-base=4.2
+  - r-ggplot2
+  - r-ggpubr
+  - r-gkmsvm
+  - r-logr
+  - r-readr
+  - r-seqinr
+  - r-reshape2
+  
+# --- Bioconductor ---
+  - bioconductor-bsgenome.hsapiens.ucsc.hg38
+  - bioconductor-bsgenome.hsapiens.ucsc.hg38.masked
+  - bioconductor-genomicranges
+  - bioconductor-regioner
