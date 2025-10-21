@@ -1,0 +1,28 @@
+rule all: 
+    input: "model.RData"
+
+rule gc_content:
+	input: "rmsk_preprocessed.bed"
+	output: "gc_content.RData"
+	shell: "Rscript gc_content.R {input} {output}"
+
+rule data: 
+    input: 
+        pred="predictors_matrix.tsv",
+        gc="gc_content.RData",
+        h2 = "41467_2019_11957_MOESM6_ESM.xlsx",
+        egenes = "egenes.RData",
+        te_list = "te_list.txt"
+    output: "data.RData"
+    shell: "Rscript data.R {input.pred} {input.gc} {input.h2} {input.egenes} {input.te_list} {output}"
+
+rule corr:
+    input: "data.RData"
+    output: "corr.RData"
+    shell: "Rscript corr.R {input} {output}"
+
+rule model:
+    input: "data.RData"
+    output: "model.RData"
+    shell: "Rscript model.R {input} {output}"
+
