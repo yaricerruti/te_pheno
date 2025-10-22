@@ -1,0 +1,39 @@
+import glob
+import os 
+
+mergedbeds= '/mnt/filippo/prj/te_enhancer_conservation/revision_dataset/v1/preprocessing/rmsk_filtered.bed' 
+BED= set([line.strip().split('\t')[3] for line in open(mergedbeds)])
+gtex_tissues= [os.path.basename(x)[:-36] for x in glob.glob("/mnt/sharedata/gtex/open_access/gtex_analysis_v8/single_tissue_qtl_data/GTEx_Analysis_v8_eQTL/*.signif_variant_gene_pairs.txt.gz")]
+gtex= "/mnt/sharedata/gtex/open_access/gtex_analysis_v8/single_tissue_qtl_data/GTEx_Analysis_v8_eQTL/"
+
+### rule to divide all beds 
+rule dividebeds:
+    input: mergedbeds
+    output: expand("TE_beds/{te}.bed", te=BED)
+    shell: ''' mkdir -p TE_beds;
+    cut -f4 {input} | uniq | while read line; do\
+        gawk -v te=$line -v OFS="\t" '\
+            $4==te {{print $0 > "TE_beds/"te".bed"}}' {input}; done             
+''' 
+
+
+rule gtexbed:
+    input: expand(gtex+"{tissue}.v8.signif_variant_gene_pairs.txt.gz", tissue= gtex_tissues)
+    output: 'gtex_bed_alltiss'
+    shell: ''' zcat {input} | cut -f1,2 | grep -v "variant" | sed 's/_/\t/g; s/chr//g;' | gawk -v OFS="\t" '{{print $1,$2-1,$2,$6}}' > {output} ''' 
+
+#### find eQTL genes    
+rule intersect:
+    input: gtex='gtex_bed_alltiss', 
+           te= 'TE_beds/{bed}.bed'
+    output: 'egenes/{bed}_egenes.txt'
+    shell: ''' bedtools intersect -a {input.gtex} -b {input.te} -wa -wb | cut -f4,8 | sort | uniq > {output} '''
+    
+rule allegenes:
+    input: expand('egenes/{bed}_egenes.txt', bed=BED)
+
+rule count:
+        input: expand('egenes/{bed}_egenes.txt', bed=BED)
+        output: 'te_egenes_counts.tsv'
+        shell: ''' cat {input} | cut -f2 | sort | uniq -c | sed -r 's/^\s+//; s/\s+/\\t/' > {output} '''
+
