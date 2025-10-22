@@ -1,0 +1,48 @@
+TEs = ["MER121", "AmnSINE1", "MamRep434", "LFSINE-Vert", "Mam-R4", "Plat-L3", "MER94B",
+  "Tigger16b", "Tigger14a", "LTR90A", "Tigger19a", "hAT-N1-Mam", "MER57E3", "Tigger12A",
+  "AmnSINE2", "MER126", "LTR1C", "MER135", "LTR1C1", "LTR2B", "LTR10B1", "MER61F", "LTR19C",
+  "MER41B", "LTR13A", "LTR76", "LTR21A", "LTR15", "LTR10E", "LTR10G", "L1M", "LTR2C",
+  "LTR3A", "LTR47B3", "MER85", "LTR42", "LTR61", "LTR22B", "LTR3B-", "LTR10B2", "LTR9C",
+  "LTR13", "LTR10A", "LTR10F"]
+
+rule all:
+    input:
+        expand("results/{te}_enrichment.tsv", te=TEs)
+
+rule chipatlas_request:
+    input:
+        "bedfiles/{te}.bed"
+    output:
+        "Logs/{te}_response.txt"
+    shell:
+        """
+        curl -X POST \
+          -d "format=text" \
+          -d "result=www" \
+          -d "genome=hg38" \
+          -d "antigenClass=TFs and others" \
+          -d "cellClass=All cell types" \
+          -d "threshold=50" \
+          -d "typeA=bed" \
+          --data-urlencode "bedAFile@{input}" \
+          -d "typeB=rnd" \
+          -d "bedBFile=empty" \
+          -d "permTime=100" \
+          -d "title=Enrichment of {wildcards.te}" \
+          -d "descriptionA={wildcards.te}" \
+          -d "descriptionB=random background" \
+          -d "distanceUp=0" \
+          -d "distanceDown=0" \
+          https://dtn1.ddbj.nig.ac.jp/wabi/chipatlas/ > {output}
+        """
+
+rule chipatlas_download:
+    input:
+        response="Logs/{te}_response.txt"
+    output:
+        "results/{te}_enrichment.tsv"
+    shell:
+        """
+        request_id=$(grep "requestId" {input.response} | awk '{{print $2}}')
+        curl -o {output} "https://dtn1.ddbj.nig.ac.jp/wabi/chipatlas/${{request_id}}?info=result&format=tsv"
+        """
