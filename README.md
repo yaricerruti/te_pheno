@@ -22,6 +22,16 @@ The pipelines needs the following external data files:
 
 ## Snakefile_egene: compute eGenes associated to TEs
 
+The pipeline can be run with the command
+
+snakemake -s Snakefile_prep
+
+after specifying the path to the data files at line 17 and that to the scripts (i.e. the src directory of the repository) at line 18
+
+The pipelines needs the following external data files:
+
+
+
 ## Snakefile_models: add GC content and eGene data and fit linear models
 
 ## Snakefile_tf: ChIP-Atlas enrichment
