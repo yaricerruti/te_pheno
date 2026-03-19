@@ -24,15 +24,29 @@ The pipelines needs the following external data files:
 
 The pipeline can be run with the command
 
-snakemake -s Snakefile_prep
+snakemake -s Snakefile_egene
 
-after specifying the path to the data files at line 17 and that to the scripts (i.e. the src directory of the repository) at line 18
+after specifying the path to the GTEx data files at lines 4-7 
 
-The pipelines needs the following external data files:
+The pipelines needs the following external data files (one per GTEx tissue):
 
-
+- {tissue}.signif_variant_gene_pairs.txt.gz that can be obtained from https://storage.googleapis.com/adult-gtex/bulk-qtl/v8/single-tissue-cis-qtl/GTEx_Analysis_v8_eQTL.tar
 
 ## Snakefile_models: add GC content and eGene data and fit linear models
 
+The pipeline can be run with the command
+
+snakemake -s Snakefile_models
+
+and uses files produced in the previous steps. For those interested in reproducing directly the modeling steps, we have provided in the "data" directory the file "data.RData" produced by the rule "data" of this pipeline.
+
 ## Snakefile_tf: ChIP-Atlas enrichment
+
+The pipeline can be run with the command
+
+snakemake -s Snakefile_models
+
+and uses the [ChIP-Atlas](https://chip-atlas.org/) API to compute the enrichment of the selected TEs listed in rows 1-6 for TF binding
+
+
 
